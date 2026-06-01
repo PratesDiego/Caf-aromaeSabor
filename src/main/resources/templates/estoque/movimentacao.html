@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Movimentação de Estoque - Café Aroma e Sabor</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <div class="logo">Café Aroma e Sabor</div>
+        <nav>
+            <ul>
+                <li><a th:href="@{/home}">Home</a></li>
+                <li><a th:href="@{/produto}">Produtos</a></li>
+                <li><a th:href="@{/estoque}">Estoque</a></li>
+                <li sec:authorize="isAnonymous()"><a th:href="@{/login}">Login</a></li>
+                <li sec:authorize="isAuthenticated()">
+                    <form th:action="@{/logout}" method="post" style="display:inline;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn logout-btn" style="background:none;border:none;padding:0;color:inherit;cursor:pointer;">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<main>
+    <div class="container">
+        <h1>Movimentação de Estoque</h1>
+        <p>Registre entradas e saídas de produtos no estoque.</p>
+
+        <!-- Formulário de Movimentação -->
+        <div style="background-color: #fff8e1; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+            <h2 style="font-size: 1.3rem; margin-top: 0;">Registrar Nova Movimentação</h2>
+            <form th:action="@{/estoque}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="form-group">
+                    <label for="produtoId">Produto:</label>
+                    <select id="produtoId" name="produtoId" required>
+                        <option value="">Selecione um produto</option>
+                        <option th:each="produto : ${produtos}" th:value="${produto.id}" th:text="${produto.nome}">Produto</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="usuarioId">Usuário:</label>
+                    <select id="usuarioId" name="usuarioId" required>
+                        <option value="">Selecione um usuário</option>
+                        <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.username}">Usuário</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo de Movimentação:</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="ENTRADA">Entrada</option>
+                        <option value="SAIDA">Saída</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quantidade">Quantidade:</label>
+                    <input type="number" id="quantidade" name="quantidade" required placeholder="Ex: 10">
+                </div>
+                <div class="form-group">
+                    <label for="motivo">Motivo:</label>
+                    <textarea id="motivo" name="motivo" rows="2" placeholder="Ex: Compra de fornecedor"></textarea>
+                </div>
+                <button type="submit" class="btn">Registrar Movimentação</button>
+            </form>
+        </div>
+
+        <!-- Tabela de Movimentações -->
+        <h2>Histórico de Movimentações</h2>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+            <thead>
+            <tr style="background-color: #5d4037; color: white;">
+                <th style="padding: 0.75rem; text-align: left;">Data</th>
+                <th style="padding: 0.75rem; text-align: left;">Produto</th>
+                <th style="padding: 0.75rem; text-align: left;">Tipo</th>
+                <th style="padding: 0.75rem; text-align: left;">Quantidade</th>
+                <th style="padding: 0.75rem; text-align: left;">Motivo</th>
+                <th style="padding: 0.75rem; text-align: left;">Alerta</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${movimentacoes.isEmpty()}">
+                <td colspan="6" style="padding: 1rem; text-align: center;">Nenhuma movimentação registrada</td>
+            </tr>
+            <tr th:each="mov : ${movimentacoes}" style="border-bottom: 1px solid #bcaaa4;">
+                <td style="padding: 0.75rem;" th:text="${#temporals.format(mov.dataMovimentacao, 'dd/MM/yyyy HH:mm')}">Data</td>
+                <td style="padding: 0.75rem;" th:text="${mov.produto.nome}">Produto</td>
+                <td th:style="'padding: 0.75rem; color: ' + (${mov.tipo.name() == 'ENTRADA'} ? 'green' : 'red') + ';'" th:text="${mov.tipo.name() == 'ENTRADA' ? 'Entrada' : 'Saída'}">Tipo</td>
+                <td style="padding: 0.75rem;" th:text="${mov.quantidade}">Quantidade</td>
+                <td style="padding: 0.75rem;" th:text="${mov.motivo}">Motivo</td>
+                <td style="padding: 0.75rem;">
+                    <span th:if="${mov.produto.isEstoqueBaixo()}" class="status-estoque-vazio">Estoque Vazio</span>
+                    <span th:unless="${mov.produto.isEstoqueBaixo()}" class="status-estoque-cheio">Estoque Cheio</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+        <a th:href="@{/home}">Voltar para Home</a>
+    </div>
+</main>
+<footer>
+    <div class="footer-container">
+        <p>&copy; 2026 Café Aroma e Sabor. Todos os direitos reservados.</p>
+    </div>
+</footer>
+</body>
+</html>

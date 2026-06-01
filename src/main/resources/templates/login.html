@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Café Aroma e Sabor</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <div class="logo">Café Aroma e Sabor</div>
+    </div>
+</header>
+<main>
+    <div class="container login-box">
+        <h2>Acesso ao Sistema</h2>
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">Usuário:</label>
+                <input type="text" id="username" name="username" required placeholder="admin ou gerente"/>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" id="password" name="password" required placeholder="Digite sua senha"/>
+            </div>
+            <button type="submit" class="btn btn-primary full-width">Entrar</button>
+        </form>
+        <div th:if="${param.error}" style="color: red; margin-top: 1rem; text-align: center;">
+            <p>Usuário ou senha inválidos!</p>
+        </div>
+        <div class="nav-links">
+            <p>Credenciais de teste (conforme SecurityConfig):</p>
+            <p><strong>Usuário:</strong> admin | <strong>Senha:</strong> adminpass</p>
+            <p><strong>Usuário:</strong> user | <strong>Senha:</strong> userpass</p>
+        </div>
+    </div>
+</main>
+<footer>
+    <div class="footer-container">
+        <p>&copy; 2026 Café Aroma e Sabor. Todos os direitos reservados.</p>
+    </div>
+</footer>
+</body>
+
+</html>
